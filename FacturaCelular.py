@@ -28,7 +28,7 @@ class FacturaPDF(FPDF):
         self.multi_cell(0, 5, "La garantía cubre exclusivamente defectos de fabricación y funcionamiento del producto durante un período de 1 mes desde la fecha de compra. ", align="C")
         self.cell(0, 5, "...", align="C")
 
-def crear_factura(cliente, IMEI, nombre, precio, fecha):
+def crear_factura(cliente, IMEI, nombre, precio, fecha, descripcion):
     pdf = FacturaPDF("P", "mm", (58, 300))  # 58 mm de ancho
     pdf.add_page()
     pdf.set_margins(left = 0, top = 0, right = 0)
@@ -43,7 +43,7 @@ def crear_factura(cliente, IMEI, nombre, precio, fecha):
 
     # Detalles de los productos
     pdf.set_font("Arial", size=11, style="B")
-    pdf.cell(0, 5, "IMEI:", align="L", )
+    pdf.cell(0, 5, "IMEI:", align="L")
     pdf.set_font("Arial", size=10)
     pdf.cell(0, 5, str(IMEI), align="R", ln=True)
 
@@ -56,6 +56,11 @@ def crear_factura(cliente, IMEI, nombre, precio, fecha):
     pdf.cell(0, 5, "Precio:", align="L")
     pdf.set_font("Arial", size=10)
     pdf.cell(0, 5, f"${precio:.2f}", align="R", ln=True)
+
+    pdf.set_font("Arial", size=11, style="B")
+    pdf.cell(0, 5, "Descripcion:", align="L", ln = True)
+    pdf.set_font("Arial", size=10)
+    pdf.multi_cell(0, 5, descripcion, align="L")
     
     pdf.ln(2)
     pdf.cell(0, 0, f"---------------------------------------------------------------", ln=True)
@@ -80,10 +85,11 @@ cliente = input("Digite el nombre del cliente: ")
 IMEI = verificarIMEI()
 nombre = input("Nombre del producto: ")
 precio = float(input("Precio del producto: "))
+descripcion = input("Descripcion del producto: ")
 
 dt = datetime.now()
 fecha = dt.strftime('%d-%m-%y %I:%M')
 
 # Crear y guardar el PDF
-pdf = crear_factura(cliente, IMEI, nombre, precio, fecha)
-pdf.output(f"Server/factura_{dt.strftime('%d-%m-%y_%I-%M-%S')}.pdf")
+pdf = crear_factura(cliente, IMEI, nombre, precio, fecha, descripcion)
+pdf.output(f"Facturas/factura_{dt.strftime('%d-%m-%y_%I-%M-%S')}.pdf")
